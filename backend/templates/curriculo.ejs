@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font-family: "Times New Roman", Georgia, serif; color:#000; }
+  .header { text-align:center; }
+  .name { font-size:16px; font-weight:700; margin-bottom:4px; }
+  .contact { font-size:10px; color:#111; }
+  hr { border:0; border-top:1px solid #999; margin:10px 0; }
+  h4 { font-size:12px; margin:10px 0 4px 0; font-weight:700; }
+  p, li { font-size:11px; line-height:1.35; margin:0 0 4px 0; }
+  ul { margin:0 0 6px 16px; }
+  .item { margin-bottom:6px; }
+  .company { font-weight:700; text-transform:uppercase; }
+  .meta { color:#111; font-size:10px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="name"><%= cv.name %></div>
+    <div class="contact"><%= cv.city || '' %> • <%= cv.phone || '' %> • <%= cv.email || '' %></div>
+  </div>
+  <hr>
+
+  <% if (cv.summary) { %>
+    <h4>RESUMO PROFISSIONAL</h4>
+    <p><%= cv.summary %></p>
+  <% } %>
+
+  <% if (cv.experiences && cv.experiences.length) { %>
+    <h4>HISTÓRICO PROFISSIONAL</h4>
+    <% cv.experiences.forEach(function(e){ %>
+      <div class="item">
+        <div class="company"><%= e.company %></div>
+        <div class="meta"><%= e.from %> - <%= e.to %></div>
+        <ul>
+          <% (e.description || '').split('\n').filter(Boolean).forEach(function(line){ %>
+            <li><%= line %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% }) %>
+  <% } %>
+
+  <% if (cv.education && cv.education.length) { %>
+    <h4>FORMAÇÃO ACADÊMICA</h4>
+    <% cv.education.forEach(function(ed){ %>
+      <div class="item">
+        <div><strong><%= ed.course %></strong> — <%= ed.institution %></div>
+        <div class="meta"><%= ed.conclusion %></div>
+      </div>
+    <% }) %>
+  <% } %>
+
+  <% if (cv.skillCourses && cv.skillCourses.length) { %>
+    <h4>HABILIDADES E COMPETÊNCIAS</h4>
+    <ul>
+      <% cv.skillCourses.forEach(function(sc){ %>
+        <li><%= sc.name %> — <%= sc.conclusion %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</body>
+</html>

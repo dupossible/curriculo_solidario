@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; color:#000; font-size:12px; }
+  .name { font-size:22px; font-weight:700; color:#0a3b78; text-align:center; }
+  .contact { font-size:11px; color:#444; text-align:center; margin-bottom:12px; }
+  h3 { font-size:12px; color:#0a3b78; text-transform:uppercase; border-bottom:1px solid #ddd; padding-bottom:3px; margin:18px 0 8px; }
+  ul { margin:6px 0 0 18px; }
+  li { margin-bottom:4px; }
+  .experience { margin-bottom:8px; }
+</style>
+</head>
+<body>
+  <div class="name"><%= cv.name %></div>
+  <div class="contact"><%= cv.city || '' %> • <%= cv.phone || '' %> • <%= cv.email || '' %></div>
+
+  <% if (cv.summary) { %>
+  <h3>Resumo Profissional</h3>
+  <div><%= cv.summary %></div>
+  <% } %>
+
+  <% if (cv.experiences && cv.experiences.length) { %>
+  <h3>Histórico Profissional</h3>
+  <% cv.experiences.forEach(function(exp){ %>
+    <div class="experience">
+      <div><strong><%= exp.company || '' %></strong></div>
+      <div style="font-weight:700; text-transform:uppercase;"><%= exp.role || '-' %></div>
+      <div style="font-size:10px; color:#666;"><%= (exp.from||'') %> a <%= (String(exp.to||'').toLowerCase()==='atual' ? 'Atual' : exp.to||'') %></div>
+      <% if (exp.description) { %>
+        <ul>
+        <% exp.description.split('\n').filter(Boolean).forEach(function(line){ %>
+          <li><%= line %></li>
+        <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  <% }) %>
+  <% } %>
+
+  <% if (cv.education && cv.education.length) { %>
+  <h3>Formação Acadêmica</h3>
+  <% cv.education.forEach(function(ed){ %>
+    <div><strong><%= ed.course || '' %></strong> — <%= ed.institution || '' %> <span style="font-size:10px;color:#666;"><%= ed.conclusion || '' %></span></div>
+  <% }) %>
+  <% } %>
+
+  <% if (cv.skillCourses && cv.skillCourses.length) { %>
+  <h3>Habilidades e Competências</h3>
+  <ul>
+    <% cv.skillCourses.forEach(function(sk){ %>
+      <li><%= sk.name || '' %><% if (sk.conclusion) { %> — <%= sk.conclusion %><% } %></li>
+    <% }) %>
+  </ul>
+  <% } %>
+  </body>
+</html>
