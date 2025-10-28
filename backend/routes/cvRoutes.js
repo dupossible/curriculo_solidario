@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs').promises;
 
-const Cv = require('../models/Cv');
+const Cv = require('./models/Cv');
 const { generatePdfFromTemplate } = require('../utils/pdf');
 
 // criar currículo, salvar no Mongo e gerar código

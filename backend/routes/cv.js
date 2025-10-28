@@ -31,6 +31,17 @@ router.get('/by-code/:code', async (req,res)=>{
   }
 });
 
+// Lista todos os currículos (nome, código e e-mail), mais recentes primeiro
+router.get('/all', async (req, res) => {
+  try {
+    const sortField = (CV.schema.paths.createdAt ? { createdAt: -1 } : { _id: -1 });
+    const docs = await CV.find({}, 'name printCode email').sort(sortField).lean();
+    res.json({ ok: true, data: docs });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 router.get('/:code/pdf', async (req,res)=>{
   try{
     const cv = await CV.findOne({ printCode: req.params.code.toUpperCase() });

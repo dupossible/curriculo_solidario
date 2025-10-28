@@ -78,10 +78,9 @@ form.addEventListener('submit', async (e)=>{
         icon: 'success',
         title: 'Currículo gerado com sucesso!',
         html: `
-          <p>Anote o <strong>código de impressão</strong> abaixo e informe para a gráfica:</p>
+          <p>Anote o <strong>código</strong> abaixo e informe à Plugin Gráfica para recebê-lo gratuitamente Impresso ou digital.</p>
           <h2 style="font-weight:bold;">${data.printCode}</h2>
-          <p class="text-muted">(a gráfica usará esse código para localizar e imprimir seu currículo. Voocê pode também solicitar o envio para seu e-mail.)</p>
-        `,
+           `,
         confirmButtonText: 'Ok, ir para a página inicial',
         allowOutsideClick: false,
         allowEscapeKey: false,

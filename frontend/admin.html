@@ -9,26 +9,72 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+
 <nav class="navbar navbar-light bg-white border-bottom px-3">
   <span class="navbar-brand mb-0 h1 text-primary">Painel da Gráfica</span>
   <button id="logout" class="btn btn-outline-secondary btn-sm">Sair</button>
 </nav>
+
 <div class="container py-4">
+  
   <div class="input-group mb-3">
     <input id="searchCode" class="form-control" placeholder="Digite o código de impressão">
     <button id="btnFind" class="btn btn-primary">Buscar</button>
   </div>
-  <div id="result"></div>
+
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <button class="btn btn-secondary" onclick="loadAll()">Listar todos</button>
+    <button class="btn btn-outline-secondary" onclick="clearList()">Limpar lista</button>
+  </div>
+
+  <!-- resultado de busca individual -->
+  <div id="result" class="mb-3"></div>
+
+  <!-- tabela de todos os currículos -->
+  <div class="table-responsive">
+    <table class="table table-striped align-middle mb-0" id="tblAll" style="display:none;">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Código</th>
+          <th>E-mail</th>
+          <th style="width:220px">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tblAllBody"></tbody>
+    </table>
+  </div>
+
 </div>
 <script>
-const API = "http://127.0.0.1:5000";
-document.getElementById('logout').onclick=()=>{ window.location.href='login-admin.html'; };
-document.getElementById('btnFind').onclick = async ()=>{
+// Detecta local vs produção automaticamente
+const API = (
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1"
+)
+  ? "http://localhost:5000"
+  : "https://curriculo-solidario.onrender.com";
+
+// Logout
+document.getElementById('logout').onclick = () => {
+  window.location.href = 'login-admin.html';
+};
+
+// 🔍 Buscar por código (já existia)
+document.getElementById('btnFind').onclick = async () => {
   const code = document.getElementById('searchCode').value.trim();
   if (!code) return;
+
+  clearList();
+
   const r = await fetch(`${API}/api/cv/by-code/${code}`);
   const data = await r.json();
-  if (!data.ok) { Swal.fire('Não encontrado','','warning'); return; }
+
+  if (!data.ok) {
+    Swal.fire('Não encontrado', '', 'warning');
+    return;
+  }
+
   const cv = data.cv;
   document.getElementById('result').innerHTML = `
     <div class="card card-elev p-3">
@@ -36,11 +82,85 @@ document.getElementById('btnFind').onclick = async ()=>{
       <div><strong>E-mail:</strong> ${cv.email}</div>
       <div><strong>Telefone:</strong> ${cv.phone}</div>
       <div class="mt-2">
-        <a href="${API}/api/cv/${cv.printCode}/pdf" target="_blank" class="btn btn-success">Baixar PDF</a>
+        <a href="${API}/api/cv/${cv.printCode}/pdf" target="_blank"
+           class="btn btn-success me-2">Baixar PDF</a>
       </div>
     </div>
   `;
 };
+
+// 📌 NOVO — Listar todos os currículos
+async function loadAll() {
+  document.getElementById('result').innerHTML = '';
+
+  try {
+    const r = await fetch(`${API}/api/cv/all`);
+    const data = await r.json();
+
+    if (!data.ok) throw new Error(data.error);
+    renderAllTable(data.data);
+  } catch (err) {
+    Swal.fire('Erro', err.message, 'error');
+  }
+}
+
+// 📌 NOVO — Renderizar tabela de todos
+function renderAllTable(list) {
+  const table = document.getElementById('tblAll');
+  const body = document.getElementById('tblAllBody');
+  body.innerHTML = '';
+
+  if (!list.length) {
+    table.style.display = 'none';
+    Swal.fire('Aviso', 'Nenhum currículo encontrado.', 'info');
+    return;
+  }
+
+  list.forEach(cv => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(cv.name || '')}</td>
+      <td><code>${cv.printCode}</code></td>
+      <td>${escapeHtml(cv.email || '')}</td>
+      <td>
+        <a class="btn btn-success btn-sm me-2" target="_blank"
+           href="${API}/api/cv/${cv.printCode}/pdf">Baixar PDF</a>
+        <button class="btn btn-outline-primary btn-sm"
+           onclick="copyCode('${cv.printCode}')">Copiar Código</button>
+      </td>
+    `;
+    body.appendChild(tr);
+  });
+
+  table.style.display = '';
+}
+
+// 📌 NOVO — Limpar lista
+function clearList() {
+  document.getElementById('tblAllBody').innerHTML = '';
+  document.getElementById('tblAll').style.display = 'none';
+}
+
+// Copiar código para área de transferência
+function copyCode(code) {
+  navigator.clipboard?.writeText(code).then(() => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Copiado!',
+      text: `Código ${code} copiado.`,
+      timer: 1200,
+      showConfirmButton: false
+    });
+  });
+}
+
+// Previne quebra de HTML
+function escapeHtml(str = '') {
+  return str.replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;',
+    '"': '&quot;', "'": '&#39;'
+  }[m]));
+}
 </script>
 </body>
 </html>

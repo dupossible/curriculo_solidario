@@ -23,7 +23,7 @@ const pwd = document.getElementById('senha');
 document.getElementById('togglePwd').onclick=()=>{ pwd.type = pwd.type==='password' ? 'text':'password'; };
 document.getElementById('loginBtn').addEventListener('click', ()=>{
   const senha = pwd.value.trim();
-  if (senha === "220783") window.location.href = "admin.html";
+  if (senha === "admin") window.location.href = "admin.html";
   else Swal.fire({ icon:'error', title:'Acesso negado', text:'Senha incorreta!' });
 });
 </script>

@@ -115,7 +115,7 @@ function renderPreviewLists(){
     const bullets = (desc ? desc.split('\n').filter(Boolean).map(line=>`<li>${line}</li>`).join('') : '');
     block.innerHTML = `
       <div class="fw-bold text-uppercase">${company||'-'}</div>
-      <div class="text-muted" style="font-size:10px">${from||''} - ${to||''}</div>
+      <div class="text-muted" style="font-size:12px">${from||''} - ${to||''}</div>
       <ul class="mb-1">${bullets}</ul>
     `;
     pExp.appendChild(block);
